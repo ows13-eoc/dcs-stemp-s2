@@ -2,26 +2,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.ingv</groupId>
-  <artifactId>dcs-stemp-s3</artifactId>
+  <artifactId>dcs-stemp-s2</artifactId>
   <packaging>pom</packaging>
-  <name>dcs-stemp-s3</name>
+  <name>dcs-stemp-s2</name>
   <parent>
     <groupId>com.terradue</groupId>
     <artifactId>dcs-bash-parent</artifactId>
     <version>2.0.0</version>
   </parent>
-  <description>dcs-stemp-s3</description>
+  <description>dcs-stemp-s2</description>
   <version>1.0-SNAPSHOT</version>
   <properties>
-    <summary>dcs-stemp-s3</summary>
-    <description>dcs-stemp-s3</description>
+    <summary>dcs-stemp-s2</summary>
+    <description>dcs-stemp-s2</description>
     <community>geohazards-tep</community>
     <yumRepo>geohazards-tep</yumRepo>
   </properties>
   <scm>
-    <connection>scm:git:ssh://git@github.com/geohazards-tep/dcs-stemp-s3</connection>
-    <developerConnection>scm:git:ssh://git@github.com/geohazards-tep/dcs-stemp-s3</developerConnection>
-    <url>https://github.com/geohazards-tep/dcs-stemp-s3</url>
+    <connection>scm:git:ssh://git@github.com/geohazards-tep/dcs-stemp-s2</connection>
+    <developerConnection>scm:git:ssh://git@github.com/geohazards-tep/dcs-stemp-s2</developerConnection>
+    <url>https://github.com/geohazards-tep/dcs-stemp-s2</url>
     <tag>HEAD</tag>
   </scm>
   <profiles>
@@ -48,8 +48,6 @@
                   <!-- Set here the dependencies installed with 'sudo yum install'-->
                   <requires>
                     <require>idl</require>
-                    <require>snap-5.0</require>
-                    <require>MODTRAN</require>
                   </requires>
                 </configuration>
               </execution>
