@@ -46,7 +46,7 @@
       </defaultJobconf>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="dcs-stemp-s3" title="STEMP-S3" abstract="Land surface temperature map (Celsius degrees) obtained by multi-spectral optical sensors (Sentinel-3 SLSTR) generated in GeoTIFF format">
+  <workflow id="dcs-stemp-s2" title="STEMP-S2" abstract="ERUPTIVE HOT SPOT detection  obtained by multi-spectral optical sensors (Sentinel-2 ) generated in GeoTIFF format">
     <workflowVersion>1.0</workflowVersion>
     <node id="node-query">
       <job id="query"/>

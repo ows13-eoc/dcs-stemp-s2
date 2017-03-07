@@ -32,7 +32,7 @@ function main() {
   local startdate="$(ciop-getparam startdate)"
   local enddate="$(ciop-getparam enddate)"
   local volcano="$(ciop-getparam volcano)"
-  local mission="sentinel3"
+  local mission="sentinel2"
 
   [ -z ${startdate} ] && exit $ERR_PARAM
   [ -z ${enddate} ] && exit $ERR_PARAM
