@@ -3,14 +3,10 @@
 source /application/libexec/functions.sh
 
 export LM_LICENSE_FILE=1700@idl.terradue.com
-export MODTRAN_BIN=/opt/MODTRAN-5.4.0
-#export STEMP_BIN=/opt/STEMP/bin
-export STEMP_BIN=/data/code/code_S3
-export STEMP_BINclass=/data/test_l8_class
-export SNAP_BIN=/opt/snap-5.0/bin
+#export MODTRAN_BIN=/opt/MODTRAN-5.4.0
+export STEMP_BIN=/data/code/code_S2
 export IDL_BIN=/usr/local/bin
 export PROCESSING_HOME=${TMPDIR}/PROCESSING
-export EMISSIVITY_AUX_PATH=${_CIOP_APPLICATION_PATH}/aux/INPUT_SRF
 
 function main() {
 
@@ -45,12 +41,12 @@ function main() {
   ciop-log "INFO" "Preparing the STEMP environment"
   export PROCESSING_HOME=${TMPDIR}/PROCESSING
   mkdir -p ${PROCESSING_HOME}
-  ln -sf /opt/MODTRAN-5.4.0/Mod5.4.0tag/DATA ${PROCESSING_HOME}/DATA
+#  ln -sf /opt/MODTRAN-5.4.0/Mod5.4.0tag/DATA ${PROCESSING_HOME}/DATA
 
-  ciop-log "INFO" "Getting atmospheric profile"
-  profile=$( getRas "${date}" "${station}" "${region}" "${PROCESSING_HOME}") || return ${ERR_GET_RAS}
-  ciop-log "INFO" "Atmospheric profile downloaded"
-  ciop-log "INFO" "------------------------------------------------------------"
+#  ciop-log "INFO" "Getting atmospheric profile"
+#  profile=$( getRas "${date}" "${station}" "${region}" "${PROCESSING_HOME}") || return ${ERR_GET_RAS}
+#  ciop-log "INFO" "Atmospheric profile downloaded"
+#  ciop-log "INFO" "------------------------------------------------------------"
 
   ciop-log "INFO" "Getting Digital Elevation Model"
   dem=$( getDem "${geom}" "${PROCESSING_HOME}" ) || return ${ERR_GET_DEM}
@@ -85,35 +81,36 @@ function main() {
 
   ciop-log "INFO" "Uncompressing product"
 
-  case ${product##*.} in
-    zip)
-      unzip -qq -o ${product} -d ${PROCESSING_HOME}
-    ;;
-
-    gz)
-      tar xzf ${product} -C ${PROCESSING_HOME}
-    ;;
-
-    bz2 | bz)
-      tar xjf ${product} -C ${PROCESSING_HOME}
-    ;;
-    *)
-      ciop-log "ERROR" "Unsupported "${product##*.}" format"
-      return ${$ERR_UNCOMP}
-    ;;
-  esac
-
+  unzip -qq -o -j ${product} */GRANULE/*/IMG_DATA/*B04.jp2 */GRANULE/*/IMG_DATA/*B8A.jp2 */GRANULE/*/IMG_DATA/*B12.jp2 -d ${PROCESSING_HOME} 
   res=$?
   [ ${res} -ne 0 ] && return ${$ERR_UNCOMP}
   ciop-log "INFO" "Product uncompressed"
   ciop-log "INFO" "------------------------------------------------------------"
 
-  ciop-log "INFO" "Getting the emissivity file and spectral response functions"
-  ciop-log "INFO" "${EMISSIVITY_AUX_PATH}/${volcano}.tif"
-  cp ${EMISSIVITY_AUX_PATH}/default.tif ${PROCESSING_HOME}/${volcano}.tif
-  cp ${EMISSIVITY_AUX_PATH}/*.txt ${PROCESSING_HOME}
+  for granule_band in $( ls ${PROCESSING_HOME}/*.jp2 ); do
+    granule_band_identifier=$( basename ${granule_band})
+    granule_band_identifier=${granule_band_identifier%.jp2}
 
-  ciop-log "INFO" "------------------------------------------------------------"
+    gdal_translate ${granule_band} ${PROCESSING_HOME}/${granule_band_identifier}.tif
+
+    mv ${PROCESSING_HOME}/${granule_band_identifier}.tif ${PROCESSING_HOME}/${granule_band_identifier}.tif.tmp
+
+    # Convert S2 product to proper UTM zone - TODO: to be verified
+    gdalwarp -t_srs "+proj=utm +zone=${UTM_ZONE} +${n_s} +datum=WGS84"  ${PROCESSING_HOME}/${granule_band_identifier}.tif.tmp ${PROCESSING_HOME}/${granule_band_identifier}.tif
+  done
+
+  for granule_band_04 in $( ls ${PROCESSING_HOME}/*B04.tif ); do
+    # Converting B04 from 10m to 20m resolution
+    mv ${granule_band_04} ${granule_band_04}.tmp
+    gdalwarp -tr 20 20 ${granule_band_04}.tmp ${granule_band_04} 
+  done
+
+#  ciop-log "INFO" "Getting the emissivity file and spectral response functions"
+#  ciop-log "INFO" "${EMISSIVITY_AUX_PATH}/${volcano}.tif"
+#  cp ${EMISSIVITY_AUX_PATH}/default.tif ${PROCESSING_HOME}/${volcano}.tif
+#  cp ${EMISSIVITY_AUX_PATH}/*.txt ${PROCESSING_HOME}
+
+#  ciop-log "INFO" "------------------------------------------------------------"
 
   ciop-log "INFO" "Checking the UTM Zone"
   ciop-log "INFO" "UTM Zone: ${UTM_ZONE}"
@@ -125,14 +122,7 @@ function main() {
     n_s="north"
   fi
   
-  ciop-log "INFO" "Resampling product to 1km"
-  ${SNAP_BIN}/gpt Resample -SsourceProduct=${product%*.zip}.SEN3/xfdumanifest.xml -Pdownsampling=First -PflagDownsampling=First -PreferenceBand=S9_BT_in -Pupsampling=Nearest -PresampleOnPyramidLevels=true -t  ${PROCESSING_HOME}/temp.dim
-  ciop-log "INFO" "Selecting bands B8,B9 from product"
-  ${SNAP_BIN}/gpt Subset -Ssource=${PROCESSING_HOME}/temp.dim -PcopyMetadata=true -PsourceBands=S8_BT_in,S9_BT_in -t ${PROCESSING_HOME}/temp_res.dim
-  ciop-log "INFO" "Reprojecting product from lat,lon to WSG84"
-  ${SNAP_BIN}/gpt Reproject -Ssource=${PROCESSING_HOME}/temp_res.dim -Pcrs=AUTO:42001 -Presampling=Nearest -t ${PROCESSING_HOME}/temp_rip.dim
-  ciop-log "INFO" "Converting product to GeoTIFF format"
-  ${SNAP_BIN}/gpt Subset -Ssource=${PROCESSING_HOME}/temp_rip.dim -PcopyMetadata=true -PsourceBands=S8_BT_in,S9_BT_in -t ${PROCESSING_HOME}/${identifier:0:31} -f GeoTiff
+#  ciop-log "INFO" "Resampling product to 1km"
   ciop-log "INFO" "Converting product to UTM zone ${UTM_ZONE} ${n_s}"
   gdalwarp -t_srs "+proj=utm +zone=${UTM_ZONE} +${n_s} +datum=WGS84"  ${PROCESSING_HOME}/${identifier:0:31}.tif ${PROCESSING_HOME}/${identifier:0:31}_UTM.tif
   
