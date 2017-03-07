@@ -6,7 +6,6 @@
       <defaultParameters>
         <parameter id="startdate" title="Start date" abstract="Format YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DD" maxOccurs="1" scope="runtime"/>
         <parameter id="enddate" title="End date" abstract="Format YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DD" maxOccurs="1" scope="runtime"/>
-        <parameter id="local_file_identifier" title="Local file identifier" abstract="Reference to a local file" maxOccurs="1" scope="runtime"/>
         <parameter id="volcano" title="Volcano name" abstract="Volcano where to perform the processing" maxOccurs="1" scope="runtime">
           <options>
             <option>Arenal</option>
