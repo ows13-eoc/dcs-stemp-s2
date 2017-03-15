@@ -186,13 +186,20 @@ function getData() {
   if [ "${ref:0:4}" == "file" ] || [ "${ref:0:1}" == "/" ]; then
     enclosure=${ref}
   else
-    enclosure=$( urlResolver "${ref}" )
+  url=$( opensearch-client "${ref}" enclosure )
+  res=$?
+
+  ciop-log "INFO" "[getData function] url file db return code: ${res}"
+  [ ${res} -ne 0 ] && return ${res}
+#    enclosure=$( urlResolver "${ref}" )
+     enclosure=${url}
+
+#    enclosure=$( urlResolver "${ref}" )
     res=$?
     [ "${res}" -ne "0" ] && ${ERR_GETDATA}
   fi
 
   ciop-log "INFO" "[getData function] Data enclosure url: ${enclosure}"
-  
   local_file="$( echo ${enclosure} | ciop-copy -f -U -O ${target} - 2> /dev/null )"
   res=$?
   [ "${res}" -ne "0" ] && return ${ERR_GETDATA}

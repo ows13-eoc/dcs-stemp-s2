@@ -87,10 +87,20 @@ function main() {
   ciop-log "INFO" "Product uncompressed"
   ciop-log "INFO" "------------------------------------------------------------"
 
+  ciop-log "INFO" "Checking the UTM Zone"
+  ciop-log "INFO" "UTM Zone: ${UTM_ZONE}"
+  
+  # If the volcano is located in southern hemisphere
+  if [ $( echo "${v_lat} < 0" | bc ) -eq 1 ]; then
+    n_s="south"
+  else
+    n_s="north"
+  fi
   for granule_band in $( ls ${PROCESSING_HOME}/*.jp2 ); do
     granule_band_identifier=$( basename ${granule_band})
     granule_band_identifier=${granule_band_identifier%.jp2}
 
+#    gdal_translate ${granule_band} ${PROCESSING_HOME}/${granule_band_identifier}.tif
     gdal_translate ${granule_band} ${PROCESSING_HOME}/${granule_band_identifier}.tif
 
     mv ${PROCESSING_HOME}/${granule_band_identifier}.tif ${PROCESSING_HOME}/${granule_band_identifier}.tif.tmp
@@ -112,39 +122,25 @@ function main() {
 
 #  ciop-log "INFO" "------------------------------------------------------------"
 
-  ciop-log "INFO" "Checking the UTM Zone"
-  ciop-log "INFO" "UTM Zone: ${UTM_ZONE}"
   
-  # If the volcano is located in southern hemisphere
-  if [ $( echo "${v_lat} < 0" | bc ) -eq 1 ]; then
-    n_s="south"
-  else
-    n_s="north"
-  fi
-  
-#  ciop-log "INFO" "Resampling product to 1km"
-  ciop-log "INFO" "Converting product to UTM zone ${UTM_ZONE} ${n_s}"
-  gdalwarp -t_srs "+proj=utm +zone=${UTM_ZONE} +${n_s} +datum=WGS84"  ${PROCESSING_HOME}/${identifier:0:31}.tif ${PROCESSING_HOME}/${identifier:0:31}_UTM.tif
   
   # temp TODO
   ls ${PROCESSING_HOME}
   
-  ciop-log "INFO" "Converting product from current resolution to 1km resolution"
-  gdalwarp -tr 1000 -1000 ${PROCESSING_HOME}/${identifier:0:31}_UTM.tif ${PROCESSING_HOME}/${identifier:0:31}_UTM_${volcano}_1km.TIF
-  
   ciop-log "INFO" "Converting DEM to UTM zone ${UTM_ZONE} ${n_s}"
   gdalwarp -t_srs "+proj=utm +zone=${UTM_ZONE} +${n_s} +datum=WGS84" ${cropped_dem} ${PROCESSING_HOME}/dem_UTM.TIF 1>&2
 
-  ciop-log "INFO" "Setting DEM resolution to 1km"
-  gdalwarp -tr 1000 -1000 ${PROCESSING_HOME}/dem_UTM.TIF ${PROCESSING_HOME}/dem_UTM_1km.TIF 1>&2
+  ciop-log "INFO" "Setting DEM resolution to 20 m"
+  gdalwarp -tr 20 -20 ${PROCESSING_HOME}/dem_UTM.TIF ${PROCESSING_HOME}/dem_UTM_20m.TIF 1>&2
   ciop-log "INFO" "------------------------------------------------------------"
 
   ciop-log "INFO" "Preparing file_input.cfg"
-  echo "${identifier:0:31}_UTM_${volcano}_1km.TIF" >> ${PROCESSING_HOME}/file_input.cfg
+  leng=${#granule_band_04}
+  echo "$(basename ${granule_band_04})" >> ${PROCESSING_HOME}/file_input.cfg
+  echo "$(basename ${granule_band_04:0:leng-8})_B8A.tif" >> ${PROCESSING_HOME}/file_input.cfg
+  echo "$(basename ${granule_band_04:0:leng-8})_B12.tif" >> ${PROCESSING_HOME}/file_input.cfg
+  echo "dem_UTM_20m.TIF" >> ${PROCESSING_HOME}/file_input.cfg
 
-  basename ${profile} >> ${PROCESSING_HOME}/file_input.cfg
-  echo "dem_UTM_1km.TIF" >> ${PROCESSING_HOME}/file_input.cfg
-  echo "${volcano}.tif" >> ${PROCESSING_HOME}/file_input.cfg
 
   ciop-log "INFO" "file_input.cfg content:"
   cat ${PROCESSING_HOME}/file_input.cfg 1>&2
@@ -159,13 +155,14 @@ function main() {
   if [ "${DEBUG}" = "true" ]; then
     ciop-publish -m ${PROCESSING_HOME}/*.TIF || return $?
     ciop-publish -m ${PROCESSING_HOME}/*.tif || return $?
-    ciop-publish -m ${PROCESSING_HOME}/*txt || return $?
     ciop-publish -m ${PROCESSING_HOME}/dem* || return $?
   fi
 
   ciop-log "INFO" "Starting STEMP core"
-  ${IDL_BIN}/idl -rt=${STEMP_BIN}/STEMP_S3.sav -IDL_DEVICE Z
-  ${IDL_BIN}/idl -rt=${STEMP_BINclass}/classificazione.sav -IDL_DEVICE Z
+  cd ${PROCESSING_HOME}
+  cp ${STEMP_BIN}/STEMP_S2.sav .
+  ciop-log "INFO" "sto per entrare in STEMP"
+  ${IDL_BIN}/idl -rt=STEMP_S2.sav -IDL_DEVICE Z
 
   ciop-log "INFO" "STEMP core finished"
   ciop-log "INFO" "------------------------------------------------------------"
@@ -173,35 +170,34 @@ function main() {
   ciop-log "INFO" "Generating quicklooks"
 
   cd ${PROCESSING_HOME}
+  ls ${PROCESSING_HOME}
   string_inp=$(head -n 1 file_input.cfg)
   leng=${#string_inp}
-  generateQuicklook ${PROCESSING_HOME}/${string_inp:0:leng-4}_TEMPclass.tif ${PROCESSING_HOME}
+  ciop-log "INFO   ${PROCESSING_HOME}/${string_inp:0:leng-8}_HOT_SPOT.tif" 
+  generateQuicklook ${string_inp:0:leng-8}_HOT_SPOT.tif ${PROCESSING_HOME}
 
   ciop-log "INFO" "Quicklooks generated:"
-  ls -l ${PROCESSING_HOME}/*TEMP*.png* 1>&2
+  ls -l ${PROCESSING_HOME}/*HOT_SPOT*.png* 1>&2
   ciop-log "INFO" "------------------------------------------------------------"
   
-  METAFILE=${PROCESSING_HOME}/${string_inp:0:leng-4}_TEMP.tif.properties
-  DATETIME=${string_inp:16:4}-${string_inp:20:2}-${string_inp:22:2}T${string_inp:25:2}:${string_inp:27:2}:${string_inp:29:2}
+  METAFILE=${PROCESSING_HOME}/${string_inp:0:leng-8}_HOT_SPOT.tif.properties
 
   echo "#Predefined Metadata" >> ${METAFILE}
   echo "title=STEMP - Surface Temperature Map" >> ${METAFILE}
   #echo "date=${identifier:16:30}" >> ${METAFILE}
-  echo "date=${DATETIME}" >> ${METAFILE}
+  echo "date=${date}" >> ${METAFILE}
   echo "Volcano=${volcano}"  >> ${METAFILE}
   echo "#Input scene" >> ${METAFILE}
-  echo "Satellite=Sentinel3" >> ${METAFILE}
+  echo "Satellite=Sentinel2" >> ${METAFILE}
   echo "#STEMP Parameters" >> ${METAFILE}
-  echo "Emissivity=Computed with TES algorithm"  >> ${METAFILE}
-  echo "Atmospheric\ Profile=$( basename ${profile} )"  >> ${METAFILE}
-  echo "DEM\ Spatial\ Resolution=1Km"  >> ${METAFILE}
-  echo "Temperature\ Unit=degree" >> ${METAFILE}
-  image_url= https://store.terradue.com/api/ingv-stemp/images/paletta.png
+  echo "DEM\ Spatial\ Resolution=20mt"  >> ${METAFILE}
+  echo "HOT\ SPOT=red color"  >> ${METAFILE}
+#  echo "image_url=htps://store.terradue.com/api/ingv-stemp/images/colorbar-stemp-s3.png"
   echo "#EOF"  >> ${METAFILE}
   
   ciop-log "INFO" "Staging-out results ..."
-  ciop-publish -m ${PROCESSING_HOME}/*TEMP*.tif || return $?
-  ciop-publish -m ${PROCESSING_HOME}/*TEMP*.png* || return $?
+  ciop-publish -m ${PROCESSING_HOME}/*HOT_SPOT*.tif || return $?
+  ciop-publish -m ${PROCESSING_HOME}/*HOT_SPOT*.png* || return $?
   ciop-publish -m ${METAFILE} || return $?
   ciop-publish -m ${PROCESSING_HOME}/*hdf || return $?
   [ ${res} -ne 0 ] && return ${ERR_PUBLISH}
