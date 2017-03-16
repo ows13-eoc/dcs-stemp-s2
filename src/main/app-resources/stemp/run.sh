@@ -183,7 +183,7 @@ function main() {
   METAFILE=${PROCESSING_HOME}/${string_inp:0:leng-8}_HOT_SPOT.tif.properties
 
   echo "#Predefined Metadata" >> ${METAFILE}
-  echo "title=STEMP - Surface Temperature Map" >> ${METAFILE}
+  echo "title=STEMP - HOT-SPOT detection" >> ${METAFILE}
   #echo "date=${identifier:16:30}" >> ${METAFILE}
   echo "date=${date}" >> ${METAFILE}
   echo "Volcano=${volcano}"  >> ${METAFILE}
@@ -199,7 +199,7 @@ function main() {
   ciop-publish -m ${PROCESSING_HOME}/*HOT_SPOT*.tif || return $?
   ciop-publish -m ${PROCESSING_HOME}/*HOT_SPOT*.png* || return $?
   ciop-publish -m ${METAFILE} || return $?
-  ciop-publish -m ${PROCESSING_HOME}/*hdf || return $?
+#  ciop-publish -m ${PROCESSING_HOME}/*hdf || return $?
   [ ${res} -ne 0 ] && return ${ERR_PUBLISH}
 
   ciop-log "INFO" "Results staged out"

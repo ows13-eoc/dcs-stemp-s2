@@ -19,7 +19,7 @@ ERR_UNCOMP=254
 ERR_PUBLISH=255
 
 LOCAL_DATA="false"
-DEBUG="true"
+DEBUG="false"
 
 # add a trap to exit gracefully
 function cleanExit () {
