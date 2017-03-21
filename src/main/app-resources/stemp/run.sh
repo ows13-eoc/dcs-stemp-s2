@@ -192,6 +192,7 @@ function main() {
   echo "#STEMP Parameters" >> ${METAFILE}
   echo "DEM\ Spatial\ Resolution=20mt"  >> ${METAFILE}
   echo "HOT\ SPOT=red color"  >> ${METAFILE}
+  echo "Producer=INGV"  >> ${METAFILE}
 #  echo "image_url=htps://store.terradue.com/api/ingv-stemp/images/colorbar-stemp-s3.png"
   echo "#EOF"  >> ${METAFILE}
   
