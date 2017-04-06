@@ -81,7 +81,7 @@ function main() {
 
   ciop-log "INFO" "Uncompressing product"
 
-  unzip -qq -o -j ${product} */GRANULE/*/IMG_DATA/*B04.jp2 */GRANULE/*/IMG_DATA/*B8A.jp2 */GRANULE/*/IMG_DATA/*B12.jp2 -d ${PROCESSING_HOME} 
+  unzip -qq -o -j ${product} */GRANULE/*/IMG_DATA/*B04.jp2 */GRANULE/*/IMG_DATA/*B8A.jp2 */GRANULE/*/IMG_DATA/*B11.jp2 */GRANULE/*/IMG_DATA/*B12.jp2 -d ${PROCESSING_HOME} 
   res=$?
   [ ${res} -ne 0 ] && return ${$ERR_UNCOMP}
   ciop-log "INFO" "Product uncompressed"
@@ -136,9 +136,10 @@ function main() {
 
   ciop-log "INFO" "Preparing file_input.cfg"
   leng=${#granule_band_04}
-  echo "$(basename ${granule_band_04})" >> ${PROCESSING_HOME}/file_input.cfg
   echo "$(basename ${granule_band_04:0:leng-8})_B8A.tif" >> ${PROCESSING_HOME}/file_input.cfg
+  echo "$(basename ${granule_band_04:0:leng-8})_B11.tif" >> ${PROCESSING_HOME}/file_input.cfg
   echo "$(basename ${granule_band_04:0:leng-8})_B12.tif" >> ${PROCESSING_HOME}/file_input.cfg
+  echo "$(basename ${granule_band_04})" >> ${PROCESSING_HOME}/file_input.cfg
   echo "dem_UTM_20m.TIF" >> ${PROCESSING_HOME}/file_input.cfg
 
 
