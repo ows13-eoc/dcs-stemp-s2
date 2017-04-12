@@ -192,8 +192,7 @@ function main() {
   echo "Satellite=Sentinel2" >> ${METAFILE}
   echo "#STEMP Parameters" >> ${METAFILE}
   echo "DEM\ Spatial\ Resolution=20mt"  >> ${METAFILE}
-  echo "HOT\ SPOT\ RED=Hot pixels"  >> ${METAFILE}
-  echo "HOT\ SPOT\ YELLOW=Very hot pixels"  >> ${METAFILE}
+  echo "HOT\ SPOT=Hot pixels(red),very hot pixels(yellow)"  >> ${METAFILE}
   echo "Producer=INGV"  >> ${METAFILE}
 #  echo "image_url=htps://store.terradue.com/api/ingv-stemp/images/colorbar-stemp-s3.png"
   echo "#EOF"  >> ${METAFILE}
