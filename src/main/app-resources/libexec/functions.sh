@@ -82,7 +82,7 @@ function generateQuicklook() {
   basename=$( basename ${input} )
   filename=${basename%.*}
 
-   /opt/anaconda/bin/gdal_translate -a_nodata 0 -scale 1 3 0 255 -of VRT ${input} ${target}/${filename}.vrt
+   /opt/anaconda/bin/gdal_translate -a_nodata 0 -scale 0 2 0 2 -of VRT ${input} ${target}/${filename}.vrt
 #  /opt/anaconda/bin/gdal_translate -a_nodata 0 -scale 1 100 0 255 -of VRT ${input} ${target}/${filename}.vrt
 
   xmlstarlet ed -L -u '/VRTDataset/VRTRasterBand/ColorInterp' -v "Palette" ${target}/${filename}.vrt
