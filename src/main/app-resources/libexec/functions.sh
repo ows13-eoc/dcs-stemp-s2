@@ -50,7 +50,7 @@ function getDem() {
   local geom=$1 
   local target=$2
 
-  endpoint="http://dem-90m-wkt.platform.terradue.int:8080/wps/WebProcessingService" 
+  endpoint="http://dem-90m-wkt-platform.terradue.com/wps/WebProcessingService" 
 
   ciop-log "INFO" "[getDem function] DEM WPS service endpoint: ${endpoint} "
   ciop-log "INFO" "[getDem function] WTK input: ${geom} "
@@ -83,7 +83,6 @@ function generateQuicklook() {
   filename=${basename%.*}
 
    /opt/anaconda/bin/gdal_translate -a_nodata 0 -scale 0 2 0 2 -of VRT ${input} ${target}/${filename}.vrt
-#  /opt/anaconda/bin/gdal_translate -a_nodata 0 -scale 1 100 0 255 -of VRT ${input} ${target}/${filename}.vrt
 
   xmlstarlet ed -L -u '/VRTDataset/VRTRasterBand/ColorInterp' -v "Palette" ${target}/${filename}.vrt
   xmlstarlet ed -L -s '/VRTDataset/VRTRasterBand' -t elem -n "ColorTable" -v "" ${target}/${filename}.vrt

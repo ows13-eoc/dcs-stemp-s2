@@ -3,8 +3,7 @@
 source /application/libexec/functions.sh
 
 export LM_LICENSE_FILE=1700@idl.terradue.com
-#export MODTRAN_BIN=/opt/MODTRAN-5.4.0
-export STEMP_BIN=/data/code/code_S2
+export STEMP_BIN=/opt/STEMP-S2/bin
 export IDL_BIN=/usr/local/bin
 export PROCESSING_HOME=${TMPDIR}/PROCESSING
 
@@ -41,12 +40,6 @@ function main() {
   ciop-log "INFO" "Preparing the STEMP environment"
   export PROCESSING_HOME=${TMPDIR}/PROCESSING
   mkdir -p ${PROCESSING_HOME}
-#  ln -sf /opt/MODTRAN-5.4.0/Mod5.4.0tag/DATA ${PROCESSING_HOME}/DATA
-
-#  ciop-log "INFO" "Getting atmospheric profile"
-#  profile=$( getRas "${date}" "${station}" "${region}" "${PROCESSING_HOME}") || return ${ERR_GET_RAS}
-#  ciop-log "INFO" "Atmospheric profile downloaded"
-#  ciop-log "INFO" "------------------------------------------------------------"
 
   ciop-log "INFO" "Getting Digital Elevation Model"
   dem=$( getDem "${geom}" "${PROCESSING_HOME}" ) || return ${ERR_GET_DEM}
@@ -61,7 +54,7 @@ function main() {
   dem_geotiff=$( convertDemToGeoTIFF "${PROCESSING_HOME}/dem.rsc" "${PROCESSING_HOME}/dem" "${PROCESSING_HOME}" ) || return ${ERR_CONV_DEM}
   ciop-log "INFO" "------------------------------------------------------------"
 
-  ciop-log "INFO" "Croppig Digital Elevation Model"
+  ciop-log "INFO" "Cropping Digital Elevation Model"
 
   # Extent in degree
   local extent=0.3
