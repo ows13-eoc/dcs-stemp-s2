@@ -50,7 +50,7 @@ function getDem() {
   local geom=$1 
   local target=$2
 
-  endpoint="http://dem-90m-wkt-platform.terradue.com/wps/WebProcessingService" 
+  endpoint="http://dem-90m-wkt.platform.terradue.int:8080/wps/WebProcessingService" 
 
   ciop-log "INFO" "[getDem function] DEM WPS service endpoint: ${endpoint} "
   ciop-log "INFO" "[getDem function] WTK input: ${geom} "

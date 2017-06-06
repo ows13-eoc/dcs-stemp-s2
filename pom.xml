@@ -7,11 +7,11 @@
   <name>dcs-stemp-s2</name>
   <parent>
     <groupId>com.terradue</groupId>
-    <artifactId>dcs-bash-parent</artifactId>
+    <artifactId>dcs-python-parent</artifactId>
     <version>2.0.0</version>
   </parent>
   <description>dcs-stemp-s2</description>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <properties>
     <summary>dcs-stemp-s2</summary>
     <description>dcs-stemp-s2</description>
@@ -48,6 +48,7 @@
                   <!-- Set here the dependencies installed with 'sudo yum install'-->
                   <requires>
                     <require>idl</require>
+                    <require>miniconda</require>
                     <require>STEMP-S2</require>
                   </requires>
                 </configuration>
