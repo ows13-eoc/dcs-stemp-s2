@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="query">
+    <operator>query</operator>
+    <sources>
+      <source refid="string:list">dummy</source>
+    </sources>
+    <streamingExecutable>/application/query/run.sh</streamingExecutable>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <startdate>${startdate}</startdate>
+      <enddate>${enddate}</enddate>
+      <volcano>${volcano}</volcano>
+    </parameters>
+    <properties class="com.bc.ceres.binding.dom.XppDomElement">
+      <maxtasks>1</maxtasks>
+    </properties>
+  </node>
+  <node id="stemp">
+    <operator>stemp</operator>
+    <sources>
+      <sourceProduct refid="query"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
+    <properties class="com.bc.ceres.binding.dom.XppDomElement">
+      <timeout>3600000</timeout>
+    </properties>
+  </node>
+</graph>
