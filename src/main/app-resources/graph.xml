@@ -21,6 +21,7 @@
     <sources>
       <sourceProduct refid="query"/>
     </sources>
+    <streamingExecutable>/application/stemp/run.sh</streamingExecutable>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
     <properties class="com.bc.ceres.binding.dom.XppDomElement">
       <timeout>3600000</timeout>
