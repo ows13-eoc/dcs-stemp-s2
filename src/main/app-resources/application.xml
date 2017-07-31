@@ -4,35 +4,9 @@
     <jobTemplate id="query">
       <streamingExecutable>/application/query/run.sh</streamingExecutable>
       <defaultParameters>
-        <parameter id="startdate" title="Start date" abstract="Format YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DD" maxOccurs="1" scope="runtime"/>
-        <parameter id="enddate" title="End date" abstract="Format YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DD" maxOccurs="1" scope="runtime"/>
-        <parameter id="volcano" title="Volcano name" abstract="Volcano where to perform the processing" maxOccurs="1" scope="runtime">
-          <options>
-            <option>Arenal</option>
-            <option>Chachimbiro</option>
-            <option>Colima</option>
-            <option>Cotacachi</option>
-            <option>Cotopaxi</option>
-            <option>Dukono</option>
-            <option>Etna</option>
-            <option>Ibu</option>
-            <option>La Cumbre Fernandina</option>
-            <option>Merapi</option>
-            <option>Piton de la Fournaise</option>
-            <option>Poas</option>
-            <option>Puyehue-Cordon Caulle</option>
-            <option>Reventador</option>
-            <option>Sangai</option>
-            <option>Santiaguito</option>
-            <option>Sierra Negra</option>
-            <option>Sinabung</option>
-            <option>Stromboli</option>
-            <option>Tungurahua</option>
-            <option>Turrialba</option>
-            <option>Vesuvio Campi Flegrei</option>
-            <default>Etna</default>
-          </options>
-        </parameter>
+        <parameter id="startdate">${startdate}</parameter>
+        <parameter id="enddate">${enddate}</parameter>
+        <parameter id="volcano">${volcano}</parameter>
       </defaultParameters>
       <defaultJobconf>
         <property id="ciop.job.max.tasks">1</property>
