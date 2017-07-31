@@ -19,7 +19,7 @@
       </defaultJobconf>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="dcs-stemp-s2" title="STEMP-S2" abstract="ERUPTIVE HOT SPOT detection  obtained by multi-spectral optical sensors (Sentinel-2 ) generated in GeoTIFF format">
+  <workflow id="dcs-stemp-s2">
     <workflowVersion>1.0</workflowVersion>
     <node id="node-query">
       <job id="query"/>
