@@ -3,7 +3,7 @@
   <ProcessDescription statusSupported="true" storeSupported="true" wps:processVersion="1.0.0">
     <ows:Identifier>stemp-s2</ows:Identifier>
     <ows:Title>STEMP-S2</ows:Title>
-    <ows:Abstract>ERUPTIVE HOT SPOT detection  obtained by multi-spectral optical sensors (Sentinel-2) generated in GeoTIFF format</ows:Abstract>
+    <ows:Abstract>ERUPTIVE HOT SPOT detection obtained by multi-spectral optical sensors (Sentinel-2) generated in GeoTIFF format</ows:Abstract>
     <DataInputs>
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>startdate</ows:Identifier>
