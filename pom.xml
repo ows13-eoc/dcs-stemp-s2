@@ -44,6 +44,7 @@
                 <goals>
                   <goal>rpm</goal>
                 </goals>
+                <phase>compile</phase>
                 <configuration>
                   <!-- Set here the dependencies installed with 'sudo yum install'-->
                   <requires>
